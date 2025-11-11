@@ -1,11 +1,12 @@
+import { useState } from "react";
 import "./App.css";
+import Router from "./router/Router";
+import publiicRoutes from "./router/routes/publicRoutes";
 
 function App() {
-  return (
-    <div className="App">
-      <h1 className="text-3xl font-bold underline">Minaya!</h1>
-    </div>
-  );
+  const [allRoutes, setAllRoutes] = useState([...publiicRoutes]);
+  console.log(allRoutes)
+  return <Router allRoutes={allRoutes}/>
 }
 
 export default App;
