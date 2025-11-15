@@ -2,7 +2,7 @@ import { lazy } from "react";
 
 const Login=lazy(()=>import("../../views/auth/Login"))
 const Register=lazy(()=>import("../../views/auth/Register"))
-const publiicRoutes = [
+const publicRoutes = [
   {
     path: "/login",
     element: <Login />,
@@ -12,4 +12,4 @@ const publiicRoutes = [
     element: <Register />,
   },
 ];
-export default publiicRoutes;
+export default publicRoutes;

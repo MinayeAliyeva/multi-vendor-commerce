@@ -1,22 +1,46 @@
 import { Link } from "react-router-dom";
 import { FaGoogle } from "react-icons/fa";
 import { FaFacebook } from "react-icons/fa";
+import {
+  useState,
+  type ChangeEventHandler,
+  type FormEventHandler,
+} from "react";
+interface IState {
+  password: string;
+  email: string;
+}
 const Login = () => {
+  const [state, setState] = useState<IState>({
+    email: "",
+    password: "",
+  });
+
+  const inputHandle: ChangeEventHandler<HTMLInputElement> | undefined = (e) => {
+    const { name, value } = e.target;
+    setState((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const submit: FormEventHandler<HTMLFormElement> | undefined = (e) => {
+    e.preventDefault();
+    console.log(state);
+  };
   return (
     <div className="min-w-screen min-h-screen bg-[#cdcae9] flex justify-center items-center">
       <div className="w-[350px] text-[#ffffff] p-2">
         <div className="bg-[#6f68d1] p-4 rounded-md">
-          <h2 className="text-xl mb-3 font-b">Welcome to Ecommerce</h2>
+          <h2 className="text-xl mb-3 font-bold">Welcome to Ecommerce</h2>
           <p className="text-sm mb-3 font-medium">
             Please Sign In your account
           </p>
-          <form>
-   
+          <form onSubmit={submit}>
             <div className="flex flex-col w-full gap-1 mb-3">
               <label htmlFor="email">Email</label>
               <input
-                type="text"
-                name="name"
+                value={state?.email}
+                onChange={inputHandle}
+                type="email"
+                name="email"
                 placeholder="Email"
                 id="email"
                 required
@@ -26,8 +50,10 @@ const Login = () => {
             <div className="flex flex-col w-full gap-1 mb-3">
               <label htmlFor="password">Password</label>
               <input
+                value={state?.password}
+                onChange={inputHandle}
                 type="password"
-                name="name"
+                name="password"
                 placeholder="Password"
                 id="password"
                 required
@@ -35,7 +61,7 @@ const Login = () => {
               />
             </div>
 
-            <button className="bg-slate-800 w-full hover:shadow-blue-300/50 hover:shadow-lg text-white rounded-mb px-7 py-2 mb-3 ">
+            <button className="bg-slate-800 w-full hover:shadow-blue-300/50 hover:shadow-lg text-white rounded-md px-7 py-2 mb-3 ">
               Sign In
             </button>
             <div className="flex items-center mb-3 gap-3 justify-center">

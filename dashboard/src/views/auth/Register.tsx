@@ -1,7 +1,28 @@
 import { Link } from "react-router-dom";
 import { FaGoogle } from "react-icons/fa";
 import { FaFacebook } from "react-icons/fa";
+import { useState, type ChangeEventHandler, type FormEventHandler } from "react";
+interface IState {
+  name: string;
+  password: string;
+  email: string;
+}
 const Register = () => {
+  const [state, setState] = useState<IState>({
+    name: "",
+    email: "",
+    password: "",
+  });
+
+  const inputHandle: ChangeEventHandler<HTMLInputElement> | undefined = (e) => {
+    const { name, value } = e.target;
+    setState((prev)=>({ ...prev, [name]: value }));
+  };
+
+  const submit:FormEventHandler<HTMLFormElement> | undefined=(e)=>{
+      e.preventDefault();
+      console.log(state)
+  }
   return (
     <div className="min-w-screen min-h-screen bg-[#cdcae9] flex justify-center items-center">
       <div className="w-[350px] text-[#ffffff] p-2">
@@ -10,7 +31,7 @@ const Register = () => {
           <p className="text-sm mb-3 font-medium">
             Please register your account
           </p>
-          <form>
+          <form onSubmit={submit}>
             <div className="flex flex-col w-full gap-1 mb-3">
               <label htmlFor="name">Name</label>
               <input
@@ -20,15 +41,19 @@ const Register = () => {
                 id="name"
                 required
                 className="px-3 py-2 outline-none border border-solid border-slate-700 bg-transparent rounded-md "
+                onChange={inputHandle}
+                value={state?.name}
               />
             </div>
             <div className="flex flex-col w-full gap-1 mb-3">
               <label htmlFor="email">Email</label>
               <input
-                type="text"
-                name="name"
+                type="email"
+                name="email"
                 placeholder="Email"
                 id="email"
+                onChange={inputHandle}
+                value={state?.email}
                 required
                 className="px-3 py-2 outline-none border border-solid border-slate-700 bg-transparent rounded-md "
               />
@@ -37,10 +62,12 @@ const Register = () => {
               <label htmlFor="password">Password</label>
               <input
                 type="password"
-                name="name"
+                name="password"
                 placeholder="Password"
                 id="password"
                 required
+                onChange={inputHandle}
+                value={state?.password}
                 className="px-3 py-2 outline-none border border-solid border-slate-700 bg-transparent rounded-md "
               />
             </div>
