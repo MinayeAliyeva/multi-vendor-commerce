@@ -3,6 +3,9 @@ import {
   type ChangeEventHandler,
   type FormEventHandler,
 } from "react";
+import { useDispatch } from "react-redux";
+import { admin_login } from "../../store/Reducers/authReducer";
+import { useAppDispatch } from "../../store/hooks";
 interface IState {
   password: string;
   email: string;
@@ -12,14 +15,16 @@ const AdminLogin = () => {
     email: "",
     password: "",
   });
+  const dispatch = useAppDispatch();
 
   const inputHandle: ChangeEventHandler<HTMLInputElement> | undefined = (e) => {
     const { name, value } = e.target;
     setState((prev) => ({ ...prev, [name]: value }));
   };
 
-  const submit: FormEventHandler<HTMLFormElement> | undefined = (e) => {
+  const submit: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
+    dispatch(admin_login(state)); 
     console.log(state);
   };
   return (
@@ -28,7 +33,11 @@ const AdminLogin = () => {
         <div className="bg-[#6f68d1] p-4 rounded-md">
           <div className="h-[70px] flex justify-center items-center">
             <div className="w-[180px] h-[50px]">
-              <img className="w-full h-full" src="http://localhost:3000/images/logo.png" alt="image" />
+              <img
+                className="w-full h-full"
+                src="http://localhost:3000/images/logo.png"
+                alt="image"
+              />
             </div>
           </div>
           <form onSubmit={submit}>
@@ -60,7 +69,7 @@ const AdminLogin = () => {
             </div>
 
             <button className="bg-slate-800 w-full hover:shadow-blue-300/50 hover:shadow-lg text-white rounded-md px-7 py-2 mb-3 ">
-             Login
+              Login
             </button>
           </form>
         </div>
