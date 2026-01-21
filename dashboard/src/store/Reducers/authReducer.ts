@@ -1,17 +1,20 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "../../api/api";
+import type { AxiosError } from "axios";
 export const admin_login = createAsyncThunk(
   "auth/admin_login",
-  async (info:any) => {
+  async (info: any) => {
     console.log("info", info);
     try {
       const { data } = await api.post("/admin-login", info, {
         withCredentials: true,
       });
     } catch (error) {
-      console.log("error",error)
+      const err = error as AxiosError<{ message: string }>;
+      console.log("error", err.response?.data?.message);
+      return err.response?.data?.message;
     }
-  }
+  },
 );
 
 const authReducer = createSlice({

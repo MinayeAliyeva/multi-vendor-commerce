@@ -1,9 +1,12 @@
 const express = require("express");
 const cors = require("cors");
-const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
-const app = express();
+const { dbConnect } = require("./utilities/db");
+const authRoutes = require("./routes/authRoutes")
 require("dotenv").config();
+
+const app = express();
 
 app.use(
   cors({
@@ -11,9 +14,19 @@ app.use(
     credentials: true,
   })
 );
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(cookieParser());
-app.get("/", (req, res) => res.send("My backend"));
-app.use("/api", require("./routes/authRoutes"));
+
+app.get("/api", (req, res) => res.send("My backend"));
+app.use("/api", authRoutes);
+
 const port = process.env.PORT || 8080;
-app.listen(port, () => console.log(`Server is running on port ${port}`));
+
+async function startServer() {
+  await dbConnect(); // connection açılmasını gözləyirik
+  console.log("Connected to DB:", mongoose.connection.name);
+
+  app.listen(port, () => console.log(`Server is running on port ${port}`));
+}
+
+startServer();

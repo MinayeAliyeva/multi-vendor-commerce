@@ -1,4 +1,5 @@
 import {
+  useEffect,
   useState,
   type ChangeEventHandler,
   type FormEventHandler,
@@ -6,6 +7,7 @@ import {
 import { useDispatch } from "react-redux";
 import { admin_login } from "../../store/Reducers/authReducer";
 import { useAppDispatch } from "../../store/hooks";
+import api from "../../api/api";
 interface IState {
   password: string;
   email: string;
@@ -15,6 +17,12 @@ const AdminLogin = () => {
     email: "",
     password: "",
   });
+
+ useEffect(()=>{
+    api.get("/")
+  },[])
+
+
   const dispatch = useAppDispatch();
 
   const inputHandle: ChangeEventHandler<HTMLInputElement> | undefined = (e) => {
