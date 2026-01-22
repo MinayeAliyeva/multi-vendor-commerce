@@ -9,6 +9,7 @@ export const admin_login = createAsyncThunk(
       const { data } = await api.post("/admin-login", info, {
         withCredentials: true,
       });
+      console.log('data',data)
     } catch (error) {
       const err = error as AxiosError<{ message: string }>;
       console.log("error", err.response?.data?.message);

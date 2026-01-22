@@ -9,5 +9,3 @@ module.exports.dbConnect = async () => {
   }
 };
 
-// useNewUrlParser: true
-// "Connection string-i oxumaq üçün yeni parser-i istifadə et."
