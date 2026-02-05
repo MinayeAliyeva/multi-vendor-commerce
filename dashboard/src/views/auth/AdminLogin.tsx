@@ -18,10 +18,11 @@ const AdminLogin = () => {
     password: "",
   });
 
- useEffect(()=>{
-    api.get("/")
-  },[])
-
+  useEffect(() => {
+    api.get("/").then((res) => {
+      console.log(res.data);
+    });
+  }, []);
 
   const dispatch = useAppDispatch();
 
@@ -32,8 +33,8 @@ const AdminLogin = () => {
 
   const submit: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault();
-    dispatch(admin_login(state)); 
-    console.log(state);
+    dispatch(admin_login(state));
+    console.log("state", state);
   };
   return (
     <div className="min-w-screen min-h-screen bg-[#cdcae9] flex justify-center items-center">

@@ -4,16 +4,16 @@ import type { AxiosError } from "axios";
 export const admin_login = createAsyncThunk(
   "auth/admin_login",
   async (info: any) => {
-    console.log("info", info);
     try {
       const { data } = await api.post("/admin-login", info, {
         withCredentials: true,
       });
       console.log('data',data)
     } catch (error) {
-      const err = error as AxiosError<{ message: string }>;
-      console.log("error", err.response?.data?.message);
-      return err.response?.data?.message;
+      const err = error as AxiosError<{ error: string }>;
+      const errorMessage=err.response?.data?.error
+      console.log("ERROR",errorMessage)
+      return errorMessage;
     }
   },
 );
