@@ -8,11 +8,11 @@ export const admin_login = createAsyncThunk(
       const { data } = await api.post("/admin-login", info, {
         withCredentials: true,
       });
-      console.log('data',data)
+      console.log("data", data);
     } catch (error) {
       const err = error as AxiosError<{ error: string }>;
-      const errorMessage=err.response?.data?.error
-      console.log("ERROR",errorMessage)
+      const errorMessage = err.response?.data?.error;
+      console.log("ERROR", errorMessage);
       return errorMessage;
     }
   },
@@ -27,7 +27,11 @@ const authReducer = createSlice({
     userInfo: "",
   },
   reducers: {},
-  extraReducers: () => {},
+  extraReducers: (builder) => {
+    builder.addCase(admin_login.pending, (state, { payload }) => {
+      state.loader = true;
+    });
+  },
 });
 
 export default authReducer.reducer;

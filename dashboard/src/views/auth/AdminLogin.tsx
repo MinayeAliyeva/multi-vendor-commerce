@@ -4,10 +4,12 @@ import {
   type ChangeEventHandler,
   type FormEventHandler,
 } from "react";
-import { useDispatch } from "react-redux";
 import { admin_login } from "../../store/Reducers/authReducer";
 import { useAppDispatch } from "../../store/hooks";
 import api from "../../api/api";
+import { PropagateLoader } from "react-spinners";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../store";
 interface IState {
   password: string;
   email: string;
@@ -25,6 +27,7 @@ const AdminLogin = () => {
   }, []);
 
   const dispatch = useAppDispatch();
+  const { loader } = useSelector((state: RootState) => state.auth);
 
   const inputHandle: ChangeEventHandler<HTMLInputElement> | undefined = (e) => {
     const { name, value } = e.target;
@@ -35,6 +38,13 @@ const AdminLogin = () => {
     e.preventDefault();
     dispatch(admin_login(state));
     console.log("state", state);
+  };
+  const overrideStyle = {
+    display: "flex",
+    margin: "0 auto",
+    height: "24px",
+    justifyContent: "center",
+    alignItem: "center",
   };
   return (
     <div className="min-w-screen min-h-screen bg-[#cdcae9] flex justify-center items-center">
@@ -77,8 +87,15 @@ const AdminLogin = () => {
               />
             </div>
 
-            <button className="bg-slate-800 w-full hover:shadow-blue-300/50 hover:shadow-lg text-white rounded-md px-7 py-2 mb-3 ">
-              Login
+            <button
+              disabled={loader ? true : false}
+              className="bg-slate-800 w-full hover:shadow-blue-300/50 hover:shadow-lg text-white rounded-md px-7 py-2 mb-3 "
+            >
+              {loader ? (
+                <PropagateLoader color="#fff" cssOverride={overrideStyle} />
+              ) : (
+                "Login"
+              )}
             </button>
           </form>
         </div>
