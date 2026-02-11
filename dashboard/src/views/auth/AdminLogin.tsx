@@ -4,12 +4,13 @@ import {
   type ChangeEventHandler,
   type FormEventHandler,
 } from "react";
-import { admin_login } from "../../store/Reducers/authReducer";
+import { admin_login, messageClear } from "../../store/Reducers/authReducer";
 import { useAppDispatch } from "../../store/hooks";
 import api from "../../api/api";
 import { PropagateLoader } from "react-spinners";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store";
+import toast from "react-hot-toast";
 interface IState {
   password: string;
   email: string;
@@ -27,7 +28,9 @@ const AdminLogin = () => {
   }, []);
 
   const dispatch = useAppDispatch();
-  const { loader } = useSelector((state: RootState) => state.auth);
+  const { loader, errorMessage } = useSelector(
+    (state: RootState) => state.auth,
+  );
 
   const inputHandle: ChangeEventHandler<HTMLInputElement> | undefined = (e) => {
     const { name, value } = e.target;
@@ -46,6 +49,12 @@ const AdminLogin = () => {
     justifyContent: "center",
     alignItem: "center",
   };
+  useEffect(() => {
+    if (errorMessage) {
+      toast.error(errorMessage);
+      dispatch(messageClear())
+    }
+  },[errorMessage]);
   return (
     <div className="min-w-screen min-h-screen bg-[#cdcae9] flex justify-center items-center">
       <div className="w-[350px] text-[#ffffff] p-2">

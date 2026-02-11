@@ -1,19 +1,21 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "../../api/api";
 import type { AxiosError } from "axios";
-export const admin_login = createAsyncThunk(
+
+export const admin_login = createAsyncThunk<any, any, { rejectValue: string }>(
   "auth/admin_login",
-  async (info: any) => {
+  async (info: any, { rejectWithValue, fulfillWithValue }) => {
     try {
       const { data } = await api.post("/admin-login", info, {
         withCredentials: true,
       });
       console.log("data", data);
+      return fulfillWithValue(data);
     } catch (error) {
       const err = error as AxiosError<{ error: string }>;
       const errorMessage = err.response?.data?.error;
       console.log("ERROR", errorMessage);
-      return errorMessage;
+      return rejectWithValue(errorMessage ?? "Something went wrong");
     }
   },
 );
@@ -26,12 +28,22 @@ const authReducer = createSlice({
     loader: false,
     userInfo: "",
   },
-  reducers: {},
+  reducers: {
+    messageClear: (state) => {
+      state.errorMessage = "";
+      state.succesMessage = "";
+    }
+  },
   extraReducers: (builder) => {
     builder.addCase(admin_login.pending, (state, { payload }) => {
       state.loader = true;
     });
+    builder.addCase(admin_login.rejected, (state, { payload }) => {
+      state.loader = false;
+      state.errorMessage = payload ?? "Something went wrong";
+    });
   },
 });
 
+export const { messageClear } = authReducer.actions;
 export default authReducer.reducer;
