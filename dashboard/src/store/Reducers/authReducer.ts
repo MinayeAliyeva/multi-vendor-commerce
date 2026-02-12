@@ -32,7 +32,7 @@ const authReducer = createSlice({
     messageClear: (state) => {
       state.errorMessage = "";
       state.succesMessage = "";
-    }
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(admin_login.pending, (state, { payload }) => {
@@ -41,6 +41,10 @@ const authReducer = createSlice({
     builder.addCase(admin_login.rejected, (state, { payload }) => {
       state.loader = false;
       state.errorMessage = payload ?? "Something went wrong";
+    });
+    builder.addCase(admin_login.fulfilled, (state, { payload }) => {
+      state.loader = false;
+      state.succesMessage = payload.message;
     });
   },
 });

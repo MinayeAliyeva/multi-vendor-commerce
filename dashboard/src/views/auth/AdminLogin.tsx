@@ -11,11 +11,13 @@ import { PropagateLoader } from "react-spinners";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../store";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 interface IState {
   password: string;
   email: string;
 }
 const AdminLogin = () => {
+  const navigate = useNavigate();
   const [state, setState] = useState<IState>({
     email: "",
     password: "",
@@ -28,7 +30,7 @@ const AdminLogin = () => {
   }, []);
 
   const dispatch = useAppDispatch();
-  const { loader, errorMessage } = useSelector(
+  const { loader, errorMessage, succesMessage } = useSelector(
     (state: RootState) => state.auth,
   );
 
@@ -52,9 +54,14 @@ const AdminLogin = () => {
   useEffect(() => {
     if (errorMessage) {
       toast.error(errorMessage);
-      dispatch(messageClear())
+      dispatch(messageClear());
     }
-  },[errorMessage]);
+    if (succesMessage) {
+      toast.success(succesMessage);
+      dispatch(messageClear());
+      navigate("/");
+    }
+  }, [errorMessage, succesMessage]);
   return (
     <div className="min-w-screen min-h-screen bg-[#cdcae9] flex justify-center items-center">
       <div className="w-[350px] text-[#ffffff] p-2">
