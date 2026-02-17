@@ -15,7 +15,7 @@ class authControllers {
             id: admin.id,
             role: admin.role,
           });
-          res.cookie("accesstoken", token, {
+          res.cookie("accessToken", token, {
             expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
             httpOnly: true, // JS oxuya bilməsin (təhlükəsizlik)
             secure: true, // HTTPS üçün
@@ -37,6 +37,24 @@ class authControllers {
       responseReturn(res, 500, { error: error.message });
     }
   };
+  //end method
+
+  getuser = async (req, res) => {
+    const { id, role } = req;
+    try {
+      if (role === "admin") {
+        const user = await adminModel.findById(id);
+        responseReturn(res, 200, { userInfo: user });
+      }else{
+        console.log("Seller Info");
+        responseReturn(res, 403, { error: "Seller Info" });
+      }
+    } catch (error) {
+      console.log("ERROR:", error.message);
+      responseReturn(res, 500, { error: error.message });
+    }
+  };
+  //end method
 }
 
 module.exports = new authControllers();
