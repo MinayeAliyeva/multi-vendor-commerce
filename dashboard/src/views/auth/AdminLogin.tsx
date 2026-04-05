@@ -44,6 +44,7 @@ const AdminLogin = () => {
     dispatch(admin_login(state));
     console.log("state", state);
   };
+  console.log(loader, errorMessage, succesMessage)
   const overrideStyle = {
     display: "flex",
     margin: "0 auto",

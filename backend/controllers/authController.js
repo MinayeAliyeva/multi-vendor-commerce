@@ -39,7 +39,7 @@ class authControllers {
   };
   //end method
 
-  getuser = async (req, res) => {
+  getUser = async (req, res) => {
     const { id, role } = req;
     try {
       if (role === "admin") {
