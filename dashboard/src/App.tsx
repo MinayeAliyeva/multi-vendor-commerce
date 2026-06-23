@@ -9,10 +9,20 @@ function App() {
   useEffect(() => {
     const routes = getRoutes();
     setAllRoutes([...allRoutes, routes]);
-      // setAllRoutes(prev => [...prev, routes]);
     console.log("routes", routes);
   },[]);
   return <Router allRoutes={allRoutes} />;
 }
 
 export default App;
+
+
+// useRoutes(allRoutes)
+// │
+// ├── /login          → Login         (public)
+// ├── /register       → Register      (public)
+// ├── /admin/login    → AdminLogin    (public)
+// │
+// └── /               → MainLayout    (private wrapper)
+//     ├── /           → Home
+//     └── admin/dashboard → AdminDashboard
