@@ -2,6 +2,18 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import api from "../../api/api";
 import { jwtDecode } from "jwt-decode";
 
+const getRejectPayload = (error, fallbackMessage) => {
+    if (error?.response?.data && typeof error.response.data === 'object') {
+        return error.response.data;
+    }
+
+    if (error?.message) {
+        return { error: error.message };
+    }
+
+    return { error: fallbackMessage };
+};
+
 export const admin_login = createAsyncThunk(
     'auth/admin_login',
     async(info,{rejectWithValue, fulfillWithValue}) => {
@@ -12,8 +24,7 @@ export const admin_login = createAsyncThunk(
             // console.log(data)
             return fulfillWithValue(data)
         } catch (error) {
-            // console.log(error.response.data)
-            return rejectWithValue(error.response.data)
+            return rejectWithValue(getRejectPayload(error, 'Admin login failed'))
         }
     }
 )
@@ -29,8 +40,7 @@ export const seller_login = createAsyncThunk(
             localStorage.setItem('accessToken',data.token) 
             return fulfillWithValue(data)
         } catch (error) {
-            // console.log(error.response.data)
-            return rejectWithValue(error.response.data)
+            return rejectWithValue(getRejectPayload(error, 'Seller login failed'))
         }
     }
 )
@@ -45,7 +55,7 @@ export const get_user_info = createAsyncThunk(
             return fulfillWithValue(data)
         } catch (error) {
             // console.log(error.response.data)
-            return rejectWithValue(error.response.data)
+            return rejectWithValue(getRejectPayload(error, 'Unable to get user info'))
         }
     }
 )
@@ -61,7 +71,7 @@ export const profile_image_upload = createAsyncThunk(
             return fulfillWithValue(data)
         } catch (error) {
             // console.log(error.response.data)
-            return rejectWithValue(error.response.data)
+            return rejectWithValue(getRejectPayload(error, 'Unable to upload profile image'))
         }
     }
 )
@@ -78,7 +88,7 @@ export const seller_register = createAsyncThunk(
             return fulfillWithValue(data)
         } catch (error) {
             // console.log(error.response.data)
-            return rejectWithValue(error.response.data)
+            return rejectWithValue(getRejectPayload(error, 'Seller registration failed'))
         }
     }
 )
@@ -93,7 +103,7 @@ export const profile_info_add = createAsyncThunk(
             return fulfillWithValue(data)
         } catch (error) {
             // console.log(error.response.data)
-            return rejectWithValue(error.response.data)
+            return rejectWithValue(getRejectPayload(error, 'Unable to save profile info'))
         }
     }
 )
@@ -134,7 +144,7 @@ export const profile_info_add = createAsyncThunk(
                 return fulfillWithValue(data)
             } catch (error) {
                 // console.log(error.response.data)
-                return rejectWithValue(error.response.data)
+                return rejectWithValue(getRejectPayload(error, 'Logout failed'))
             }
         }
     )
@@ -153,7 +163,7 @@ export const profile_info_add = createAsyncThunk(
                 return fulfillWithValue(data.message)
             } catch (error) {
                 // console.log(error.response.data)
-                return rejectWithValue(error.response.data.message)
+                return rejectWithValue(getRejectPayload(error, 'Password change failed'))
             }
         }
     )
@@ -184,7 +194,7 @@ export const authReducer = createSlice({
         })
         .addCase(admin_login.rejected, (state, { payload }) => {
             state.loader = false;
-            state.errorMessage = payload.error
+            state.errorMessage = payload?.error || payload?.message || 'Admin login failed'
         }) 
         .addCase(admin_login.fulfilled, (state, { payload }) => {
             state.loader = false;
@@ -198,7 +208,7 @@ export const authReducer = createSlice({
         }) 
         .addCase(seller_login.rejected, (state, { payload }) => {
             state.loader = false;
-            state.errorMessage = payload.error
+            state.errorMessage = payload?.error || payload?.message || 'Seller login failed'
         }) 
         .addCase(seller_login.fulfilled, (state, { payload }) => {
             state.loader = false;
@@ -212,7 +222,7 @@ export const authReducer = createSlice({
         })
         .addCase(seller_register.rejected, (state, { payload }) => {
             state.loader = false;
-            state.errorMessage = payload.error
+            state.errorMessage = payload?.error || payload?.message || 'Seller registration failed'
         }) 
         .addCase(seller_register.fulfilled, (state, { payload }) => {
             state.loader = false;
