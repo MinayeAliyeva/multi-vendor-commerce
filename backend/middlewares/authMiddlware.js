@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const { getJwtSecret } = require("../utilities/jwtSecret");
 
 module.exports.authMiddleware = async (req, res, next) => {
   const { accessToken } = req.cookies;
@@ -8,7 +9,7 @@ module.exports.authMiddleware = async (req, res, next) => {
     try {
       const decodedToken = await jwt.verify(
         accessToken,
-        process.env.JWT_SECRET_KEY,
+        getJwtSecret(),
       );
       req.role = decodedToken.role;
       req.id = decodedToken.id;

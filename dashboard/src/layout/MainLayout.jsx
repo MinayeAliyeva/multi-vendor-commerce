@@ -12,21 +12,37 @@ const MainLayout = () => {
     const {userInfo } = useSelector(state => state.auth)
 
     useEffect(() => {
+        if (!userInfo?._id || !userInfo?.role) {
+            return
+        }
+
+        if (!socket.connected) {
+            socket.connect()
+        }
+
         if (userInfo && userInfo.role === 'seller') {
             socket.emit('add_seller', userInfo._id,userInfo)
-        } else {
+        } else if (userInfo.role === 'admin') {
             socket.emit('add_admin', userInfo)
         }
     },[userInfo])
 
     useEffect(() => {
-        socket.on('activeCustomer',(customers)=>{
+        const handleActiveCustomer = (customers) => {
             dispatch(updateCustomer(customers))
-        })
-        socket.on('activeSeller',(sellers)=>{
+        }
+        const handleActiveSeller = (sellers) => {
             dispatch(updateSellers(sellers))
-        })
-    })
+        }
+
+        socket.on('activeCustomer',handleActiveCustomer)
+        socket.on('activeSeller',handleActiveSeller)
+
+        return () => {
+            socket.off('activeCustomer',handleActiveCustomer)
+            socket.off('activeSeller',handleActiveSeller)
+        }
+    },[dispatch])
 
     const [showSidebar, setShowSidebar] = useState(false)
 

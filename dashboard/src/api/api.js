@@ -1,19 +1,15 @@
 import axios from "axios";
-const local = 'http://localhost:5000'
+
 const production = 'https://backend-mern-multi-vendor-ecommerce-v8oq.onrender.com'
 
-let api_url = ''
-let mode = 'pro'
-
-if (mode === 'pro') {
-    api_url = production
-} else {
-    api_url = local
+const normalizeUrl = (url) => {
+    return url.replace(/\/+$/, '')
 }
 
+export const apiBaseUrl = normalizeUrl(process.env.REACT_APP_API_URL || production)
 
 const api = axios.create({
-    baseURL : `${api_url}/api`,
+    baseURL : `${apiBaseUrl}/api`,
     withCredentials: true
 })
 

@@ -2,6 +2,19 @@ const bcrypt = require("bcrypt");
 const adminModel = require("../models/adminModel");
 const { responseReturn } = require("../utilities/response");
 const { createToken } = require("../utilities/tokenCreate");
+
+const getCookieOptions = (req) => {
+  const isHttps =
+    req.secure || req.headers["x-forwarded-proto"] === "https";
+
+  return {
+    expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    httpOnly: true,
+    secure: isHttps,
+    sameSite: isHttps ? "none" : "lax",
+  };
+};
+
 class authControllers {
   admin_login = async (req, res) => {
     const { email, password } = req.body;
@@ -15,12 +28,7 @@ class authControllers {
             id: admin.id,
             role: admin.role,
           });
-          res.cookie("accessToken", token, {
-            expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-            httpOnly: true, // JS oxuya bilməsin (təhlükəsizlik)
-            secure: true, // HTTPS üçün
-            sameSite: "strict", // CSRF qorunması
-          });
+          res.cookie("accessToken", token, getCookieOptions(req));
 
           responseReturn(res, 200, {
             token,
