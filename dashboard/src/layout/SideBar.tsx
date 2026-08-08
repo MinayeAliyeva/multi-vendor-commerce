@@ -2,6 +2,7 @@ import { useEffect, useState, type JSX } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { getNav } from "../navigation/index";
 import { RiLogoutCircleLine } from "react-icons/ri";
+import { BiLogOutCircle } from "react-icons/bi";
 interface INav {
   id: number;
   title: string;
@@ -30,7 +31,7 @@ const SideBar = ({
     <div>
       <div
         onClick={() => setShowSidebar(false)}
-        className={`flex duration-200 ${showSidebar ? "invisible" : "visible"} w-screen h-screen bg-[#22292f80] top-0 left-0 z-10`}
+        className={`fixed lg:hidden duration-200 ${showSidebar ? "visible opacity-100" : "invisible opacity-0"} w-screen h-screen bg-[#22292f80] top-0 left-0 z-40`}
       ></div>
 
       <div
@@ -61,7 +62,7 @@ const SideBar = ({
             <li>
               <button className='text-[#030811] font-bold duration-200" px-[12px] py-[9px] rounded-sm flex justify-start items-center gap-[12px] hover:pl-4 transition-all w-full mb-1'>
                 <span>
-                  <RiLogoutCircleLine />
+                  <BiLogOutCircle />
                 </span>
                 <span>Logout</span>
               </button>
