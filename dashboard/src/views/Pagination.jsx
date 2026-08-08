@@ -4,11 +4,9 @@ import { MdOutlineKeyboardDoubleArrowLeft,MdOutlineKeyboardDoubleArrowRight } fr
 
 const Pagination = ({pageNumber,setPageNumber,totalItem,parPage,showItem}) => {
 
-    // Umumi item sayi ve her sehifede gosterilen item sayina gore page sayi hesablanir.
     let totalPage = Math.ceil(totalItem / parPage)
     let startPage = pageNumber
 
-    // Son sehifelere yaxinlasanda button araligi saga dasmasin deye startPage geri cekilir.
     let dif = totalPage - pageNumber
     if (dif <= showItem) {
         startPage = totalPage - showItem
@@ -21,7 +19,6 @@ const Pagination = ({pageNumber,setPageNumber,totalItem,parPage,showItem}) => {
 
     const createBtn = () => {
 
-        // Gosterilecek page button-lari dinamik yaradilir.
         const btns = []
         for (let i = startPage; i < endPage; i++) {
             btns.push(
@@ -36,7 +33,6 @@ const Pagination = ({pageNumber,setPageNumber,totalItem,parPage,showItem}) => {
     return (
         <ul className='flex gap-3'>
             {
-                // Birinci sehifede olanda prev button gizlenir.
                 pageNumber > 1 && <li onClick={() => setPageNumber(pageNumber - 1)} className='w-[33px] h-[33px] rounded-full flex justify-center items-center bg-slate-300 text-[#000000] cursor-pointer'>
                     <MdOutlineKeyboardDoubleArrowLeft />
                 </li>
@@ -45,7 +41,6 @@ const Pagination = ({pageNumber,setPageNumber,totalItem,parPage,showItem}) => {
                 createBtn()
             }
             {
-                // Son sehifede olanda next button gizlenir.
                 pageNumber < totalPage && <li onClick={() => setPageNumber(pageNumber + 1)} className='w-[33px] h-[33px] rounded-full flex justify-center items-center bg-slate-300 text-[#000000] cursor-pointer'>
                     <MdOutlineKeyboardDoubleArrowRight  />
                 </li>

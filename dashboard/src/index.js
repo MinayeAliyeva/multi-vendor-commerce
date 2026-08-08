@@ -11,14 +11,10 @@ const App = lazy(() => import('./App'))
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  // BrowserRouter butun app-e route sistemi verir.
   <BrowserRouter>
-   {/* Provider Redux store-u butun componentlere acir. */}
    <Provider store={store} >
-    {/* Suspense lazy import olunan sehifeler yuklenene qeder app-i saxlayir. */}
     <Suspense>
     <App /> 
-    {/* Toaster toast.success / toast.error mesajlarini ekranda gosteren global componentdir. */}
     <Toaster
       toastOptions={{
         position : 'top-right',

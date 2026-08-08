@@ -17,7 +17,6 @@ const AdminLogin = () => {
     })
 
     const inputHandle = (e) => {
-        // Input name-i hansi field-dirsa, state-de hemin field yenilenir.
         setState({
             ...state,
             [e.target.name] : e.target.value
@@ -26,7 +25,6 @@ const AdminLogin = () => {
 
     const submit = (e) => {
         e.preventDefault()
-        // Form submit olanda Redux async thunk ise dusur.
         dispatch(admin_login(state))
         // console.log(state)
     }
@@ -36,11 +34,10 @@ const AdminLogin = () => {
         margin : '0 auto',
         height: '24px',
         justifyContent : 'center',
-        alignItem : 'center'
+        alignItems : 'center'
     }
 
     useEffect(() => {
-        // Redux-dan gelen error/success mesajlari toast-a cevrilir.
         if (errorMessage) {
             toast.error(errorMessage)
             dispatch(messageClear())
@@ -48,7 +45,6 @@ const AdminLogin = () => {
         if (successMessage) {
             toast.success(successMessage)
             dispatch(messageClear())  
-            // Login ugurlu olanda dashboard layout-un oldugu root route-a kecir.
             navigate('/')          
         }
     },[errorMessage,successMessage])

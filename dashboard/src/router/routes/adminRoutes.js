@@ -11,7 +11,6 @@ const ChatSeller = lazy(()=> import('../../views/admin/ChatSeller'))
 const OrderDetails = lazy(()=> import('../../views/admin/OrderDetails'))  
 
 export const adminRoutes = [
-    // path URL-dir, element ise hemin URL acilanda render olunan sehifedir.
     {
         path: 'admin/dashboard',
         element : <AdminDashboard/>,
@@ -51,9 +50,14 @@ export const adminRoutes = [
         path: 'admin/dashboard/seller/details/:sellerId',
         element : <SellerDetails/> ,
         role : 'admin'
-    },
+    }, 
     {
         path: 'admin/dashboard/chat-sellers',
+        element : <ChatSeller/> ,
+        role : 'admin'
+    },
+    {
+        path: 'admin/dashboard/chat-sellers/:sellerId',
         element : <ChatSeller/> ,
         role : 'admin'
     },

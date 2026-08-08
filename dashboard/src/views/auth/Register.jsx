@@ -1,11 +1,21 @@
-import React, { useState } from 'react';
-import {Link} from 'react-router-dom'
+import React, { useEffect, useState } from 'react';
+import {Link, useNavigate} from 'react-router-dom'
 import { FaGoogle } from "react-icons/fa";
 import { FaFacebook } from "react-icons/fa";
+import { useDispatch, useSelector } from 'react-redux';
+import { PropagateLoader } from 'react-spinners';
+import { overrideStyle } from '../../utils/utils';
+import { seller_register,messageClear } from '../../store/Reducers/authReducer';
+import toast from 'react-hot-toast';
 
 const Register = () => {
 
-    // Register formunun field-leri tek object icinde saxlanilir.
+    const  navigate = useNavigate()
+
+    const dispatch = useDispatch()
+
+    const {loader,successMessage,errorMessage} = useSelector(state=>state.auth)
+
     const [state, setState] = useState({
         name: "",
         email: "",
@@ -13,7 +23,6 @@ const Register = () => {
     })
 
     const inputHandle = (e) => {
-        // e.target.name sayesinde eyni handler butun input-lari yenileyir.
         setState({
             ...state,
             [e.target.name] : e.target.value
@@ -22,10 +31,25 @@ const Register = () => {
 
     const submit = (e) => {
         e.preventDefault()
-        // Bu merhelede backend request yoxdur, sadece form datasi yoxlanilir.
-        console.log(state)
+        dispatch(seller_register(state))
     }
 
+    useEffect(() => {
+
+        if (successMessage) {
+            toast.success(successMessage)
+            dispatch(messageClear())
+            navigate('/')  
+        }
+        if (errorMessage) {
+            toast.error(errorMessage)
+            dispatch(messageClear())
+        }
+        
+
+    },[successMessage,errorMessage])
+
+    
 
 
     return (
@@ -59,7 +83,11 @@ const Register = () => {
             <label htmlFor="checkbox"> I agree to privacy policy & treams</label> 
         </div>
 
-        <button className='bg-slate-800 w-full hover:shadow-blue-300/ hover:shadow-lg text-white rounded-md px-7 py-2 mb-3'>Sign Up</button>
+        <button disabled={loader ? true : false}  className='bg-slate-800 w-full hover:shadow-blue-300/ hover:shadow-lg text-white rounded-md px-7 py-2 mb-3'>
+            {
+               loader ? <PropagateLoader color='#fff' cssOverride={overrideStyle} /> : 'Sign Up'
+            } 
+            </button>
 
         <div className='flex items-center mb-3 gap-3 justify-center'>
             <p>Already Have an account ? <Link className='font-bold' to="/login">Sing In</Link> </p> 

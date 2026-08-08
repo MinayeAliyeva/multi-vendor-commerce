@@ -1,24 +1,53 @@
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { List } from 'react-window';
+import { confirm_payment_request, get_payment_request,messageClear } from '../../store/Reducers/PaymentReducer';
+import moment from 'moment';
+import toast from 'react-hot-toast';
 
-// react-window scroll olunan siyahida sadece gorunen row-lari render edir.
-// Bu, coxlu row olanda sehifeni daha suretli saxlayir.
 function handleOnWheel({ deltaY }) {
     console.log('handleOnWheel',deltaY)
 }
 
 const PaymentRequest = () => {
-    // List her setir ucun bu componenti cagirir; index setir nomresidir, style mutleq verilməlidir.
+
+    const dispatch = useDispatch()
+    const {successMessage, errorMessage, pendingWithdrows,loader } = useSelector(state => state.payment)
+    const [paymentId, setPaymentId] = useState('')
+
+    useEffect(() => { 
+        dispatch(get_payment_request())
+    },[])
+
+    const confirm_request = (id) => {
+        setPaymentId(id)
+        dispatch(confirm_payment_request(id))
+    }
+
+    useEffect(() => {
+        if (successMessage) {
+            toast.success(successMessage)
+            dispatch(messageClear())
+        }
+        if (errorMessage) {
+            toast.error(errorMessage)
+            dispatch(messageClear())
+        }
+    },[successMessage,errorMessage])
+     
+
     const Row = ({ index, style }) => {
         return (
         <div style={style} className='flex text-sm text-white font-medium'>
         <div className='w-[25%] p-2 whitespace-nowrap'>{index + 1}</div>
-        <div className='w-[25%] p-2 whitespace-nowrap'>$3434</div>
+        <div className='w-[25%] p-2 whitespace-nowrap'>${pendingWithdrows[index]?.amount}</div>
         <div className='w-[25%] p-2 whitespace-nowrap'>
-            <span className='py-[1px] px-[5px] bg-slate-300 text-blue-500 rounded-md text-sm'>Pending</span>
+            <span className='py-[1px] px-[5px] bg-slate-300 text-blue-500 rounded-md text-sm'>{pendingWithdrows[index]?.status}</span>
          </div>
-        <div className='w-[25%] p-2 whitespace-nowrap'> 25 Dec 2023 </div>
+        <div className='w-[25%] p-2 whitespace-nowrap'> {moment(pendingWithdrows[index]?.createdAt).format('LL')} </div>
         <div className='w-[25%] p-2 whitespace-nowrap'>
-            <button className='bg-indigo-500 shadow-lg hover:shadow-indigo-500/50 px-3 py-[2px] cursor-pointer text-white rounded-sm text-sm'>Confirm</button>
+            
+            <button disabled={loader} onClick={() => confirm_request(pendingWithdrows[index]?._id)} className='bg-indigo-500 shadow-lg hover:shadow-indigo-500/50 px-3 py-[2px] cursor-pointer text-white rounded-sm text-sm'>{(loader && paymentId === pendingWithdrows[index]?._id) ? 'loading..' : 'Confirm'}</button>
         </div>
 
             </div>
@@ -44,10 +73,9 @@ const PaymentRequest = () => {
                 </div>
                 {
                     <List
-                    // v2 API: rowCount sayi, rowHeight hundurluk, rowComponent ise setir componentidir.
                     style={{ minWidth : '340px', height: 350 }}
                     className='List'
-                    rowCount={100}
+                    rowCount={pendingWithdrows.length}
                     rowHeight={35}
                     rowProps={{}}
                     rowComponent={Row}
