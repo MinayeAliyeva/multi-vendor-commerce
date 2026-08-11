@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
-import Header from './Header'; 
+import Header from './Header';
 import Sidebar from './Sidebar';
 import { socket } from '../utils/utils'
 import { useDispatch, useSelector } from 'react-redux';
@@ -12,41 +12,37 @@ const MainLayout = () => {
     const {userInfo } = useSelector(state => state.auth)
 
     useEffect(() => {
-        if (!userInfo?._id || !userInfo?.role) {
+        if (!userInfo) {
             return
         }
 
-        if (!socket.connected) {
-            socket.connect()
-        }
-
-        if (userInfo && userInfo.role === 'seller') {
+        if (userInfo.role === 'seller') {
             socket.emit('add_seller', userInfo._id,userInfo)
-        } else if (userInfo.role === 'admin') {
+        } else {
             socket.emit('add_admin', userInfo)
         }
     },[userInfo])
 
     useEffect(() => {
-        const handleActiveCustomer = (customers) => {
+        const handleActiveCustomer = (customers)=>{
             dispatch(updateCustomer(customers))
         }
-        const handleActiveSeller = (sellers) => {
+        const handleActiveSeller = (sellers)=>{
             dispatch(updateSellers(sellers))
         }
 
-        socket.on('activeCustomer',handleActiveCustomer)
-        socket.on('activeSeller',handleActiveSeller)
+        socket.on('activeCustomer', handleActiveCustomer)
+        socket.on('activeSeller', handleActiveSeller)
 
         return () => {
-            socket.off('activeCustomer',handleActiveCustomer)
-            socket.off('activeSeller',handleActiveSeller)
+            socket.off('activeCustomer', handleActiveCustomer)
+            socket.off('activeSeller', handleActiveSeller)
         }
-    },[dispatch])
+    }, [dispatch])
 
     const [showSidebar, setShowSidebar] = useState(false)
 
-    return ( 
+    return (
         <div className='bg-[#cdcae9] w-full min-h-screen'>
             <Header showSidebar={showSidebar} setShowSidebar={setShowSidebar} />
             <Sidebar showSidebar={showSidebar} setShowSidebar={setShowSidebar} />

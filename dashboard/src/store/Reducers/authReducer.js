@@ -17,7 +17,6 @@ const getRejectPayload = (error, fallbackMessage) => {
 export const admin_login = createAsyncThunk(
     'auth/admin_login',
     async(info,{rejectWithValue, fulfillWithValue}) => {
-         console.log(info)
         try {
             const {data} = await api.post('/admin-login',info,{withCredentials: true})
             localStorage.setItem('accessToken',data.token)
@@ -33,11 +32,9 @@ export const admin_login = createAsyncThunk(
 export const seller_login = createAsyncThunk(
     'auth/seller_login',
     async(info,{rejectWithValue, fulfillWithValue}) => {
-         console.log(info)
         try {
             const {data} = await api.post('/seller-login',info,{withCredentials: true})
-            console.log(data)
-            localStorage.setItem('accessToken',data.token) 
+            localStorage.setItem('accessToken',data.token)
             return fulfillWithValue(data)
         } catch (error) {
             return rejectWithValue(getRejectPayload(error, 'Seller login failed'))
@@ -48,13 +45,14 @@ export const seller_login = createAsyncThunk(
 export const get_user_info = createAsyncThunk(
     'auth/get_user_info',
     async(_ ,{rejectWithValue, fulfillWithValue}) => {
-          
+
         try {
             const {data} = await api.get('/get-user',{withCredentials: true})
-            // console.log(data)            
+            // console.log(data)
             return fulfillWithValue(data)
         } catch (error) {
             // console.log(error.response.data)
+            localStorage.removeItem('accessToken')
             return rejectWithValue(getRejectPayload(error, 'Unable to get user info'))
         }
     }
@@ -64,10 +62,10 @@ export const get_user_info = createAsyncThunk(
 export const profile_image_upload = createAsyncThunk(
     'auth/profile_image_upload',
     async(image ,{rejectWithValue, fulfillWithValue}) => {
-          
+
         try {
             const {data} = await api.post('/profile-image-upload',image,{withCredentials: true})
-            // console.log(data)            
+            // console.log(data)
             return fulfillWithValue(data)
         } catch (error) {
             // console.log(error.response.data)
@@ -75,31 +73,29 @@ export const profile_image_upload = createAsyncThunk(
         }
     }
 )
-// end method 
+// end method
 
 export const seller_register = createAsyncThunk(
     'auth/seller_register',
-    async(info,{rejectWithValue, fulfillWithValue}) => { 
+    async(info,{rejectWithValue, fulfillWithValue}) => {
         try {
-            console.log(info)
             const {data} = await api.post('/seller-register',info,{withCredentials: true})
             localStorage.setItem('accessToken',data.token)
             //  console.log(data)
             return fulfillWithValue(data)
         } catch (error) {
-            // console.log(error.response.data)
             return rejectWithValue(getRejectPayload(error, 'Seller registration failed'))
         }
     }
 )
 
-// end method 
+// end method
 
 export const profile_info_add = createAsyncThunk(
     'auth/profile_info_add',
-    async(info,{rejectWithValue, fulfillWithValue}) => { 
-        try { 
-            const {data} = await api.post('/profile-info-add',info,{withCredentials: true}) 
+    async(info,{rejectWithValue, fulfillWithValue}) => {
+        try {
+            const {data} = await api.post('/profile-info-add',info,{withCredentials: true})
             return fulfillWithValue(data)
         } catch (error) {
             // console.log(error.response.data)
@@ -107,69 +103,77 @@ export const profile_info_add = createAsyncThunk(
         }
     }
 )
-// end method 
+// end method
 
 
 
     const returnRole = (token) => {
         if (token) {
-           const decodeToken = jwtDecode(token)
-           const expireTime = new Date(decodeToken.exp * 1000)
-           if (new Date() > expireTime) {
-             localStorage.removeItem('accessToken')
-             return ''
-           } else {
-                return decodeToken.role
+           try {
+               const decodeToken = jwtDecode(token)
+               const expireTime = new Date(decodeToken.exp * 1000)
+               if (new Date() > expireTime) {
+                 localStorage.removeItem('accessToken')
+                 return ''
+               } else {
+                    return decodeToken.role
+               }
+           } catch (error) {
+                localStorage.removeItem('accessToken')
+                return ''
            }
-            
+
         } else {
             return ''
         }
     }
 
-    // end Method 
+    // end Method
 
     export const logout = createAsyncThunk(
         'auth/logout',
-        async({navigate,role},{rejectWithValue, fulfillWithValue}) => {
-             
+        async({navigate,role},{fulfillWithValue}) => {
+            let responseData = { message: 'Logout Success' }
+
             try {
-                const {data} = await api.get('/logout', {withCredentials: true}) 
-                localStorage.removeItem('accessToken') 
-                if (role === 'admin') {
-                    navigate('/admin/login')
-                } else {
-                    navigate('/login')
-                }
-                return fulfillWithValue(data)
+                const {data} = await api.get('/logout', {withCredentials: true})
+                responseData = data
             } catch (error) {
-                // console.log(error.response.data)
-                return rejectWithValue(getRejectPayload(error, 'Logout failed'))
+                responseData = error.response?.data || responseData
             }
+
+            localStorage.removeItem('accessToken')
+            if (role === 'admin') {
+                navigate('/admin/login')
+            } else {
+                navigate('/login')
+            }
+            return fulfillWithValue(responseData)
         }
     )
 
-        // end Method 
+        // end Method
 
     /// Chanage Password method
 
     export const change_password = createAsyncThunk(
         'auth/change_password',
         async(info ,{rejectWithValue, fulfillWithValue}) => {
-              
+
             try {
                 const {data} = await api.post('/change-password',info,{withCredentials: true})
-                // console.log(data)            
+                // console.log(data)
                 return fulfillWithValue(data.message)
             } catch (error) {
                 // console.log(error.response.data)
-                return rejectWithValue(getRejectPayload(error, 'Password change failed'))
+                const payload = getRejectPayload(error, 'Password change failed')
+                return rejectWithValue(payload.error || payload.message)
             }
         }
     )
-    // end method 
+    // end method
 
- 
+
 export const authReducer = createSlice({
     name: 'auth',
     initialState:{
@@ -184,6 +188,7 @@ export const authReducer = createSlice({
 
         messageClear : (state,_) => {
             state.errorMessage = ""
+            state.successMessage = ""
         }
 
     },
@@ -195,7 +200,7 @@ export const authReducer = createSlice({
         .addCase(admin_login.rejected, (state, { payload }) => {
             state.loader = false;
             state.errorMessage = payload?.error || payload?.message || 'Admin login failed'
-        }) 
+        })
         .addCase(admin_login.fulfilled, (state, { payload }) => {
             state.loader = false;
             state.successMessage = payload.message
@@ -205,11 +210,11 @@ export const authReducer = createSlice({
 
         .addCase(seller_login.pending, (state, { payload }) => {
             state.loader = true;
-        }) 
+        })
         .addCase(seller_login.rejected, (state, { payload }) => {
             state.loader = false;
             state.errorMessage = payload?.error || payload?.message || 'Seller login failed'
-        }) 
+        })
         .addCase(seller_login.fulfilled, (state, { payload }) => {
             state.loader = false;
             state.successMessage = payload.message
@@ -223,7 +228,7 @@ export const authReducer = createSlice({
         .addCase(seller_register.rejected, (state, { payload }) => {
             state.loader = false;
             state.errorMessage = payload?.error || payload?.message || 'Seller registration failed'
-        }) 
+        })
         .addCase(seller_register.fulfilled, (state, { payload }) => {
             state.loader = false;
             state.successMessage = payload.message
@@ -231,13 +236,23 @@ export const authReducer = createSlice({
             state.role = returnRole(payload.token)
         })
 
+        .addCase(get_user_info.pending, (state) => {
+            state.loader = true
+        })
+        .addCase(get_user_info.rejected, (state, { payload }) => {
+            state.loader = false
+            state.userInfo = ''
+            state.role = ''
+            state.token = null
+            state.errorMessage = payload?.error || payload?.message || 'Unable to get user info'
+        })
         .addCase(get_user_info.fulfilled, (state, { payload }) => {
             state.loader = false;
             state.userInfo = payload.userInfo
         })
 
         .addCase(profile_image_upload.pending, (state, { payload }) => {
-            state.loader = true; 
+            state.loader = true;
         })
         .addCase(profile_image_upload.fulfilled, (state, { payload }) => {
             state.loader = false;
@@ -246,7 +261,7 @@ export const authReducer = createSlice({
         })
 
         .addCase(profile_info_add.pending, (state, { payload }) => {
-            state.loader = true; 
+            state.loader = true;
         })
         .addCase(profile_info_add.fulfilled, (state, { payload }) => {
             state.loader = false;
@@ -262,10 +277,18 @@ export const authReducer = createSlice({
         .addCase(change_password.rejected, (state,action) => {
             state.loader = false;
             state.errorMessage = action.payload;
-        }) 
+        })
         .addCase(change_password.fulfilled, (state,action) => {
             state.loader = false;
-            state.successMessage = action.payload 
+            state.successMessage = action.payload
+        })
+        .addCase(logout.fulfilled, (state, { payload }) => {
+            state.loader = false;
+            state.userInfo = ''
+            state.role = ''
+            state.token = null
+            state.successMessage = ''
+            state.errorMessage = ''
         });
 
 

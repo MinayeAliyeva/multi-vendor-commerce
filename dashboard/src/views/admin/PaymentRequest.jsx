@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { forwardRef, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { List } from 'react-window';
+import { FixedSizeList as List } from 'react-window';
 import { confirm_payment_request, get_payment_request,messageClear } from '../../store/Reducers/PaymentReducer';
 import moment from 'moment';
 import toast from 'react-hot-toast';
@@ -9,13 +9,17 @@ function handleOnWheel({ deltaY }) {
     console.log('handleOnWheel',deltaY)
 }
 
+const outerElementType = forwardRef((props, ref) => (
+    <div ref={ref} onWheel={handleOnWheel} {...props} />
+ ))
+
 const PaymentRequest = () => {
 
     const dispatch = useDispatch()
     const {successMessage, errorMessage, pendingWithdrows,loader } = useSelector(state => state.payment)
     const [paymentId, setPaymentId] = useState('')
 
-    useEffect(() => { 
+    useEffect(() => {
         dispatch(get_payment_request())
     },[])
 
@@ -34,7 +38,7 @@ const PaymentRequest = () => {
             dispatch(messageClear())
         }
     },[successMessage,errorMessage])
-     
+
 
     const Row = ({ index, style }) => {
         return (
@@ -46,8 +50,8 @@ const PaymentRequest = () => {
          </div>
         <div className='w-[25%] p-2 whitespace-nowrap'> {moment(pendingWithdrows[index]?.createdAt).format('LL')} </div>
         <div className='w-[25%] p-2 whitespace-nowrap'>
-            
-            <button disabled={loader} onClick={() => confirm_request(pendingWithdrows[index]?._id)} className='bg-indigo-500 shadow-lg hover:shadow-indigo-500/50 px-3 py-[2px] cursor-pointer text-white rounded-sm text-sm'>{(loader && paymentId === pendingWithdrows[index]?._id) ? 'loading..' : 'Confirm'}</button>
+
+            <button disabled={loader} onClick={() => confirm_request(pendingWithdrows[index]?._id)} className='bg-indigo-500 shadow-lg hover:shadow-indigo-500/50 px-3 py-[2px cursor-pointer text-white rounded-sm text-sm]'>{(loader && paymentId === pendingWithdrows[index]?._id) ? 'loading..' : 'Confirm'}</button>
         </div>
 
             </div>
@@ -69,18 +73,20 @@ const PaymentRequest = () => {
                     <div className='w-[25%] p-2'> Amount </div>
                     <div className='w-[25%] p-2'> Status </div>
                     <div className='w-[25%] p-2'> Date </div>
-                    <div className='w-[25%] p-2'> Action </div> 
+                    <div className='w-[25%] p-2'> Action </div>
                 </div>
                 {
                     <List
-                    style={{ minWidth : '340px', height: 350 }}
+                    style={{ minWidth : '340px'}}
                     className='List'
-                    rowCount={pendingWithdrows.length}
-                    rowHeight={35}
-                    rowProps={{}}
-                    rowComponent={Row}
-                    onWheel={handleOnWheel}
-                    />
+                    height={350}
+                    itemCount={pendingWithdrows.length}
+                    itemSize={35}
+                    outerElementType={outerElementType}
+                    >
+                        {Row}
+
+                    </List>
                 }
 
             </div>
@@ -88,7 +94,7 @@ const PaymentRequest = () => {
         </div>
 
     </div>
-    
+
 </div>
     );
 };

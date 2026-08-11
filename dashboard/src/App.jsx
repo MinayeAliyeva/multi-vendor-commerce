@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo } from "react";
 import Router from "./router/Router";
 import publicRoutes from "./router/routes/publicRoutes";
 import { getRoutes } from "./router/routes";
@@ -10,23 +10,17 @@ function App() {
     const dispatch = useDispatch()
     const { token } = useSelector(state => state.auth)
 
-    const [allRoutes, setAllRoutes] = useState([...publicRoutes])
-    // console.log(allRoutes)
-
-    useEffect(() => {
-        const routes = getRoutes()
-        setAllRoutes([...allRoutes,routes])
-    },[])
+    const allRoutes = useMemo(() => [...publicRoutes, getRoutes()], [])
 
     useEffect(() => {
         if (token) {
             dispatch(get_user_info())
         }
 
-    },[token])
+    },[token, dispatch])
 
 
-    return <Router allRoutes={allRoutes} /> 
+    return <Router allRoutes={allRoutes} />
 }
 
 export default App;
